@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音频提取工具</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #dc2626;
+            --text-color: #1f2937;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            background-image: url('../images/winter.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            padding: 4rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(8px);
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+        
+        .input-group {
+            margin-bottom: 3rem;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 1.25rem;
+            font-size: 1.1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+        
+        button {
+            width: 100%;
+            padding: 1.25rem;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: white;
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 3rem;
+        }
+        
+        button:hover {
+            background-color: #b91c1c;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        .signature {
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.9rem;
+            font-weight: 400;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>音频提取工具</h1>
+        <div class="input-group">
+            <input type="text" id="url" placeholder="请输入播客链接" required>
+        </div>
+        <button onclick="captureAudio()">提取音频</button>
+        <p class="signature">- 橙色马丁 -</p>
+    </div>
+
+    <script>
+        function captureAudio() {
+            const url = document.getElementById('url').value;
+            if (!url) {
+                alert('请输入有效的播客链接');
+                return;
+            }
+            // 处理音频提取逻辑
+        }
+    </script>
+</body>
+</html>
