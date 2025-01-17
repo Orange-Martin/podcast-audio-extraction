@@ -116,13 +116,33 @@
     </div>
 
     <script>
-        function captureAudio() {
+        async function captureAudio() {
             const url = document.getElementById('url').value;
             if (!url) {
-                alert('请输入有效的播客链接');
+                alert('请输入播客链接');
                 return;
             }
-            // 处理音频提取逻辑
+
+            try {
+                // 获取页面源代码
+                const response = await fetch(url);
+                const html = await response.text();
+                
+                // 查找音频链接
+                const audioPattern = /https?:\/\/[^\s<>"']+?(?:\.m4a|\.mp3)[^\s<>"']*/i;
+                const match = html.match(audioPattern);
+                
+                if (match) {
+                    const audioUrl = match[0];
+                    // 在新窗口打开音频链接
+                    window.open(audioUrl, '_blank');
+                } else {
+                    alert('未找到音频链接，请检查链接是否正确');
+                }
+            } catch (error) {
+                alert('获取音频失败，请检查链接是否正确');
+                console.error('Error:', error);
+            }
         }
     </script>
 </body>
