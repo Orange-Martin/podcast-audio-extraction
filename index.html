@@ -117,15 +117,20 @@
 
     <script>
         async function captureAudio() {
-            const url = document.getElementById('url').value;
-            if (!url) {
+            const urlInput = document.querySelector('input[type="text"]');
+            const button = document.querySelector('button');
+            
+            if (!urlInput.value) {
                 alert('请输入播客链接');
                 return;
             }
-
+            
+            button.disabled = true;
+            button.textContent = '提取中...';
+            
             try {
                 // 获取页面源代码
-                const response = await fetch(url);
+                const response = await fetch(urlInput.value);
                 const html = await response.text();
                 
                 // 查找音频链接
@@ -134,14 +139,36 @@
                 
                 if (match) {
                     const audioUrl = match[0];
-                    // 在新窗口打开音频链接
-                    window.open(audioUrl, '_blank');
+                    
+                    // 获取音频文件
+                    const audioResponse = await fetch(audioUrl);
+                    const blob = await audioResponse.blob();
+                    
+                    // 创建下载链接
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    
+                    // 设置文件名
+                    const filename = audioUrl.split('/').pop() || 'audio.mp3';
+                    a.download = filename;
+                    
+                    // 触发下载
+                    document.body.appendChild(a);
+                    a.click();
+                    
+                    // 清理
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
                 } else {
-                    alert('未找到音频链接，请检查链接是否正确');
+                    throw new Error('未找到音频链接');
                 }
             } catch (error) {
-                alert('获取音频失败，请检查链接是否正确');
-                console.error('Error:', error);
+                alert(error.message || '提取过程出错');
+            } finally {
+                button.disabled = false;
+                button.textContent = '提取音频';
             }
         }
     </script>
