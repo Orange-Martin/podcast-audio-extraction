@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多功能工具箱</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- 从服务器安全地加载环境变量 -->
+    <script src="env-config.js"></script>
+    <style>
+        :root {
+            --primary-color: #dc2626;
+            --text-color: #1f2937;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --tab-inactive: #f3f4f6;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            background-image: url('../images/winter.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            padding: 4rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(8px);
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+        
+        .input-group {
+            margin-bottom: 3rem;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 1.25rem;
+            font-size: 1.1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+        
+        button {
+            width: 100%;
+            padding: 1.25rem;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: white;
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 3rem;
+        }
+        
+        button:hover {
+            background-color: #b91c1c;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        .signature {
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.9rem;
+            font-weight: 400;
+        }
+        
+        /* Tab Navigation Styles */
+        .tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .tab-button {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 500;
+            background: var(--tab-inactive);
+            border: none;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            margin-right: 0.5rem;
+            color: var(--text-color);
+            opacity: 0.7;
+            transition: all 0.2s ease;
+        }
+        
+        .tab-button.active {
+            background: var(--card-bg);
+            opacity: 1;
+            border-bottom: 3px solid var(--primary-color);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Text-to-Image Styles */
+        .prompt-area {
+            width: 100%;
+            min-height: 100px;
+            padding: 1.25rem;
+            font-size: 1.1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            resize: vertical;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+        
+        .prompt-area:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+        
+        .prompt-preview {
+            width: 100%;
+            margin-top: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            font-size: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background-color: #f9fafb;
+            color: var(--text-color);
+            line-height: 1.5;
+            display: none;
+        }
+        
+        .optimized-prompt-container {
+            width: 100%;
+            margin-bottom: 2rem;
+            display: none;
+            padding: 1.5rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .optimized-prompt-label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            display: block;
+            color: var(--text-color);
+        }
+        
+        .optimized-prompt-content {
+            width: 100%;
+            min-height: 80px;
+            padding: 1rem;
+            font-size: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background-color: #f9fafb;
+            color: var(--text-color);
+            line-height: 1.5;
+            overflow-y: auto;
+        }
+        
+        .image-preview {
+            width: 100%;
+            min-height: 300px;
+            border: 2px dashed #e5e7eb;
+            border-radius: 8px;
+            margin-top: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #9ca3af;
+            font-size: 1.1rem;
+        }
+        
+        h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-color);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .button-group button {
+            flex: 1;
+            margin-bottom: 0;
+        }
+        
+        .image-preview img {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-left: 10px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            vertical-align: middle;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>多功能工具箱</h1>
+        
+        <!-- Tab Navigation -->
+        <div class="tabs">
+            <button class="tab-button active" onclick="openTab('audio-tab')">音频提取</button>
+            <button class="tab-button" onclick="openTab('text-to-image-tab')">文生图</button>
+        </div>
+        
+        <!-- Audio Extraction Tab -->
+        <div id="audio-tab" class="tab-content active">
+            <div class="input-group">
+                <input type="text" id="url" placeholder="请输入播客链接" required>
+            </div>
+            <button onclick="captureAudio()">提取音频</button>
+        </div>
+        
+        <!-- Text-to-Image Tab -->
+        <div id="text-to-image-tab" class="tab-content">
+            <!-- 原始提示词输入区（用于优化） -->
+            <div class="input-group">
+                <h3>提示词优化</h3>
+                <textarea class="prompt-area" id="image-prompt" placeholder="请输入提示词描述您想要生成的图片..." required></textarea>
+                <div class="prompt-preview" id="prompt-preview">
+                    <strong>当前提示词预览：</strong>
+                    <div id="prompt-preview-content"></div>
+                </div>
+                <button onclick="optimizePrompt()">优化提示词</button>
+            </div>
+            
+            <!-- 优化后的提示词展示区域 -->
+            <div class="optimized-prompt-container" id="optimized-prompt-container">
+                <span class="optimized-prompt-label">优化后的提示词：</span>
+                <div class="optimized-prompt-content" id="optimized-prompt-content"></div>
+                <div class="button-group" style="margin-top: 1rem;">
+                    <button onclick="copyToDirectPrompt()">复制到直接生成区</button>
+                    <button onclick="generateImage('optimized')">直接生成图片</button>
+                </div>
+            </div>
+            
+            <!-- 直接生成图片的输入区域 -->
+            <div class="input-group" style="margin-top: 2rem; border-top: 1px solid #e5e7eb; padding-top: 2rem;">
+                <h3>直接生成图片</h3>
+                <textarea class="prompt-area" id="direct-image-prompt" placeholder="直接输入提示词生成图片，或从上方复制优化后的提示词..."></textarea>
+                <button onclick="generateImage('direct')">生成图片</button>
+            </div>
+            
+            <!-- 图片预览区域 -->
+            <div class="image-preview">
+                <span id="preview-placeholder">图片预览区域</span>
+                <img id="generated-image" alt="生成的图片">
+            </div>
+        </div>
+        
+        <p class="signature">- 多功能工具箱 -</p>
+    </div>
+
+    <script>
+        // Tab Navigation Function
+        function openTab(tabId) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(tab => tab.classList.remove('active'));
+            
+            // Deactivate all tab buttons
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(button => button.classList.remove('active'));
+            
+            // Show the selected tab content
+            document.getElementById(tabId).classList.add('active');
+            
+            // Activate the clicked tab button
+            const activeButton = document.querySelector(`[onclick="openTab('${tabId}')"]`);
+            activeButton.classList.add('active');
+        }
+        
+        // Audio Extraction Function
+        async function captureAudio() {
+            const urlInput = document.querySelector('#url');
+            const button = document.querySelector('#audio-tab button');
+            
+            if (!urlInput.value) {
+                alert('请输入播客链接');
+                return;
+            }
+            
+            button.disabled = true;
+            button.textContent = '提取中...';
+            
+            try {
+                // 获取页面源代码
+                const response = await fetch(urlInput.value);
+                const html = await response.text();
+                
+                // 查找音频链接
+                const audioPattern = /https?:\/\/[^\s<>"']+?(?:\.m4a|\.mp3)[^\s<>"']*/i;
+                const match = html.match(audioPattern);
+                
+                if (match) {
+                    const audioUrl = match[0];
+                    
+                    // 获取音频文件
+                    const audioResponse = await fetch(audioUrl);
+                    const blob = await audioResponse.blob();
+                    
+                    // 创建下载链接
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    
+                    // 设置文件名
+                    const filename = audioUrl.split('/').pop() || 'audio.mp3';
+                    a.download = filename;
+                    
+                    // 触发下载
+                    document.body.appendChild(a);
+                    a.click();
+                    
+                    // 清理
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                } else {
+                    throw new Error('未找到音频链接');
+                }
+            } catch (error) {
+                alert(error.message || '提取过程出错');
+            } finally {
+                button.disabled = false;
+                button.textContent = '提取音频';
+            }
+        }
+        
+        // Function to update prompt preview when typing
+        function updatePromptPreview() {
+            const promptArea = document.querySelector('#image-prompt');
+            const promptPreview = document.querySelector('#prompt-preview');
+            const promptPreviewContent = document.querySelector('#prompt-preview-content');
+            
+            if (promptArea.value.trim()) {
+                promptPreviewContent.textContent = promptArea.value;
+                promptPreview.style.display = 'block';
+            } else {
+                promptPreview.style.display = 'none';
+            }
+        }
+        
+        // 确保在 CONFIG 对象加载完成后再初始化页面
+        let configLoaded = false;
+        
+        // 监听 config-loaded 事件
+        document.addEventListener('config-loaded', function() {
+            console.log('CONFIG 对象已加载完成');
+            configLoaded = true;
+        });
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            const promptArea = document.querySelector('#image-prompt');
+            promptArea.addEventListener('input', updatePromptPreview);
+            
+            // 检查 CONFIG 对象是否已加载
+            if (!window.CONFIG) {
+                console.warn('CONFIG 对象尚未加载，请确保 env-config.js 文件已正确引入');
+            } else {
+                console.log('CONFIG 对象已存在，包含的密钥：', Object.keys(window.CONFIG));
+            }
+        });
+        
+        // Function to optimize prompt using Gemini API
+        async function optimizePrompt() {
+            const promptArea = document.querySelector('#image-prompt');
+            const optimizeButton = document.querySelector('#text-to-image-tab button');
+            const optimizedPromptContainer = document.querySelector('#optimized-prompt-container');
+            const optimizedPromptContent = document.querySelector('#optimized-prompt-content');
+            
+            if (!promptArea.value) {
+                alert('请输入提示词');
+                return;
+            }
+            
+            // Add loading spinner to button
+            optimizeButton.disabled = true;
+            optimizeButton.innerHTML = '优化中... <span class="loading-spinner"></span>';
+            
+            try {
+                // 检查 API 密钥是否已配置（在服务器端）
+                if (!window.CONFIG || !window.CONFIG.DEEPSEEK_API_KEY_CONFIGURED) {
+                    throw new Error('DeepSeek API 密钥未配置，请确保环境变量已正确设置');
+                }
+                
+                // 使用服务器端点优化提示词，而不是直接调用 Gemini API
+                const response = await fetch('/api/optimize-prompt', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        prompt: promptArea.value
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `API 请求失败: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // 从服务器响应中提取优化后的提示词
+                const optimizedPrompt = data.optimizedPrompt;
+                
+                // Display optimized prompt
+                optimizedPromptContent.textContent = optimizedPrompt;
+                optimizedPromptContainer.style.display = 'block';
+                
+                // Store optimized prompt for image generation
+                optimizedPromptContent.dataset.prompt = optimizedPrompt;
+                
+            } catch (error) {
+                console.error('Error optimizing prompt:', error);
+                alert('提示词优化失败: ' + (error.message || '未知错误'));
+            } finally {
+                // Restore button state
+                optimizeButton.disabled = false;
+                optimizeButton.textContent = '优化提示词';
+            }
+        }
+        
+        // 复制优化后的提示词到直接生成区
+        function copyToDirectPrompt() {
+            const optimizedPromptContent = document.querySelector('#optimized-prompt-content');
+            const directPromptArea = document.querySelector('#direct-image-prompt');
+            
+            // 获取优化后的提示词
+            const optimizedPrompt = optimizedPromptContent.dataset.prompt || optimizedPromptContent.textContent;
+            
+            if (!optimizedPrompt) {
+                alert('没有可复制的优化提示词');
+                return;
+            }
+            
+            // 复制到直接生成区
+            directPromptArea.value = optimizedPrompt;
+            
+            // 提示用户
+            alert('已复制到直接生成区');
+        }
+        
+        // 生成图片函数，可以基于优化后的提示词或直接输入的提示词
+        async function generateImage(source = 'optimized') {
+            let generateButton, promptToUse;
+            const previewPlaceholder = document.querySelector('#preview-placeholder');
+            const generatedImage = document.querySelector('#generated-image');
+            
+            // 根据来源选择不同的提示词和按钮
+            if (source === 'optimized') {
+                const optimizedPromptContent = document.querySelector('#optimized-prompt-content');
+                generateButton = document.querySelector('#optimized-prompt-container .button-group button:last-child');
+                promptToUse = optimizedPromptContent.dataset.prompt || optimizedPromptContent.textContent;
+                
+                if (!promptToUse) {
+                    alert('请先优化提示词');
+                    return;
+                }
+            } else { // direct
+                const directPromptArea = document.querySelector('#direct-image-prompt');
+                generateButton = document.querySelector('#direct-image-prompt').nextElementSibling;
+                promptToUse = directPromptArea.value;
+                
+                if (!promptToUse) {
+                    alert('请输入提示词');
+                    return;
+                }
+            }
+            
+            // 添加加载动画
+            generateButton.disabled = true;
+            generateButton.innerHTML = '生成中... <span class="loading-spinner"></span>';
+            previewPlaceholder.textContent = '图片生成中，请稍候...';
+            previewPlaceholder.style.display = 'block';
+            generatedImage.style.display = 'none';
+            
+            // 使用服务器端代理调用 Recraft API 以避免 CORS 问题
+try {
+    // 显示加载状态
+    console.log('Using prompt:', promptToUse);
+    
+    // 准备 Recraft API 请求数据，根据官方文档调整参数
+    const requestBody = {
+        prompt: promptToUse,
+        style: "digital_illustration", // 主风格
+        model: "recraftv3", // 使用 recraftv3
+        substyle: "grain", // 添加子风格
+        negative_prompt: "low quality, blurry, distorted, deformed",
+        num_images: 1  // API 会将这个参数转换为 'n'
+    };
+    
+    // 可以添加其他可选参数
+    // size: "1024x1024" - 可以指定图片大小，如 "1024x1024"、"1280x1024" 等
+    // substyle: 可以指定子风格，如 "hand_drawn"、"flat" 等
+    
+    console.log('Request payload:', JSON.stringify(requestBody));
+    
+    // 使用 OpenAI 客户端方式的服务器端点生成图片
+    console.log('发送请求到图片生成端点');
+    
+    // 使用新的端点 URL
+    const generateUrl = 'http://localhost:3000/api/generate-image';
+    console.log('生成图片 URL:', generateUrl);
+    
+    const response = await fetch(generateUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+    });
+    
+    console.log('Response status:', response.status);
+    
+    if (!response.ok) {
+        throw new Error(`API request failed with status: ${response.status}`);
+    }
+    
+    const responseData = await response.json();
+    console.log('Response data:', responseData);
+    
+    // 处理 Recraft API 响应
+    if (responseData.data && responseData.data.length > 0) {
+        // 获取生成的图片 URL
+        const imageUrl = responseData.data[0].url;
+        
+        // 显示生成的图片
+        generatedImage.src = imageUrl;
+        generatedImage.style.display = 'block';
+        previewPlaceholder.style.display = 'none';
+    } else {
+        throw new Error('No image data returned from API');
+    }
+                
+            } catch (error) {
+                console.error('Error generating image:', error);
+                alert('图片生成失败: ' + (error.message || '未知错误'));
+                previewPlaceholder.textContent = '图片生成失败，请重试';
+                previewPlaceholder.style.display = 'block';
+            } finally {
+                // Restore button state
+                generateButton.disabled = false;
+                generateButton.textContent = '生成图片';
+            }
+        }
+    </script>
+</body>
+</html>
